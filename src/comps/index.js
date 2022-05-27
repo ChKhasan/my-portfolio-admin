@@ -6,6 +6,9 @@ import {
   Route,
   Routes,
 } from "react-router-dom";
+import Access from "../pages/Access";
+import LoginP from "../pages/LoginP";
+import ProtectedRoutes from "../pages/ProtectedRoutes";
 import Experiences from "./Experiences";
 import LayoutP from "./LayoutP";
 import Messages from "./Messages";
@@ -17,8 +20,8 @@ import Users from "./Users";
 
 const index = () => {
   return (
-    <BrowserRouter>
       <Routes>
+        <Route path="/" element={<Access />} >
         <Route
           path="/"
           element={
@@ -36,8 +39,14 @@ const index = () => {
           <Route path="photos" element={<Photos />} />
           <Route path="personal" element={<PersonalSettings />} />
         </Route>
+
+        </Route>
+        
+        <Route path="/" element={<ProtectedRoutes />} >
+        <Route path="/login" element={<LoginP />} />
+        </Route>
+
       </Routes>
-    </BrowserRouter>
   );
 };
 

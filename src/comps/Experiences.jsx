@@ -1,8 +1,11 @@
-import { Table ,Modal, Button, Form, Input, Checkbox} from 'antd'
-import { Content } from 'antd/lib/layout/layout'
-import React, { useState } from 'react'
+import { Table, Modal, Button, Form, Input, Checkbox, Space } from "antd";
+import { Content } from "antd/lib/layout/layout";
+import React, { useEffect, useState } from "react";
+import { getData, postData, deleteData, putData } from "../server/common";
+import { EditTwoTone } from "@ant-design/icons";
 
-const columns = [
+const Experiences = () => {
+  const columns = [
     {
       title: "Work Name",
       dataIndex: "work_name",
@@ -24,34 +27,22 @@ const columns = [
       title: "End Date",
       dataIndex: "end_date",
     },
-  ];
-  const data = [
     {
-      key: "1",
-      work_name: "Front End Developer",
-      company_name: "Marcossoft",
-      description: "Medpay",
-      start_date: "2020-05-05",
-      end_date: "2022-07-08"
-
+      title: "Action",
+      key: "action",
+      render: (_, record) => (
+        <Space size="middle">
+          <a>{record.name}</a>
+          <a onClick={() => editApiData(record)}>
+            <EditTwoTone />
+          </a>
+        </Space>
+      ),
     },
-    {
-      key: "2",
-      work_name: "Front End Developer",
-      company_name: "Marcossoft",
-      description: "Medpay",
-      start_date: "2020-05-05",
-      end_date: "2022-07-08"
-    },
-
   ];
   const rowSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
-      console.log(
-        `selectedRowKeys: ${selectedRowKeys}`,
-        "selectedRows: ",
-        selectedRows
-      );
+      setSelected(selectedRows);
     },
     getCheckboxProps: (record) => ({
       disabled: record.name === "Disabled User",
@@ -59,9 +50,12 @@ const columns = [
       name: record.name,
     }),
   };
-
-const Experiences = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selected, setSelected] = useState([]);
+  const [skillData, setSkillData] = useState([]);
+  const [isEdit, setIsEdit] = useState(null);
+
+  const [form] = Form.useForm();
 
   const showModal = () => {
     setIsModalVisible(true);
@@ -75,107 +69,156 @@ const Experiences = () => {
     setIsModalVisible(false);
   };
 
+  const getApiData = () => {
+    getData("experiences").then((res) => setSkillData(res.data.data));
+  };
   const onFinish = (values) => {
-    console.log('Success:', values);
-    setIsModalVisible(false);
+    console.log("Success:", values);
 
+    if (isEdit) {
+      console.log("put", isEdit);
+      putData(`experiences/${isEdit._id}`, values).then(() => {
+        getApiData();
+      });
+      setIsEdit(null);
+    } else {
+      console.log("post", isEdit);
+
+      postData("experiences", values).then(() => {
+        getApiData();
+      });
+    }
+    form.resetFields();
+
+    setIsModalVisible(false);
+  };
+  const deleteApiData = () => {
+    selected.map((item) => deleteData(`experiences/${item._id}`));
+    getApiData();
+  };
+  useEffect(() => {
+    getApiData();
+  }, []);
+  const editApiData = (e) => {
+    form.setFieldsValue(e);
+    setIsEdit(e);
+    setIsModalVisible(true);
   };
   return (
-  
     <div className="content-body">
-    <div className="content-title">
+      <div className="content-title">
         <h3>Experiences</h3>
+      </div>
+      <Content
+        className="site-layout-background"
+        style={{
+          margin: "24px 16px",
+          padding: 24,
+          minHeight: 280,
+        }}
+      >
+        <div className="d-flex w-100 justify-content-between">
+        <div className="col-6 d-flex justify-content-start">
+              {selected.length > 0 && (
+                <Button type="primary" danger onClick={deleteApiData}>
+                  Delete
+                </Button>
+              )}
+            </div>
+            <div className="col-6 d-flex justify-content-end">
+              <Button type="primary" onClick={showModal}>
+                Add Experiences
+              </Button>
+            </div>
+          <Modal
+            title="Basic Modal"
+            visible={isModalVisible}
+            onOk={handleOk}
+            onCancel={handleCancel}
+            footer={[]}
+          >
+            <Form
+              name="normal_login"
+              form={form}
+              layout="vertical"
+              // className="login-form"
+              initialValues={{ remember: true }}
+              onFinish={onFinish}
+            >
+              <Form.Item
+                name="work_name"
+                label="Work Name"
+                rules={[
+                  { required: true, message: "Please input your Username!" },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+
+              <Form.Item
+                name="company_name"
+                label="Company Name"
+                rules={[
+                  { required: true, message: "Please input your Password!" },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+
+              <Form.Item
+                name="description"
+                label="Description"
+                rules={[
+                  { required: true, message: "Please input your Username!" },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+
+              <Form.Item
+                name="start_date"
+                label="Start Date"
+                rules={[
+                  { required: true, message: "Please input your Password!" },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+
+              <Form.Item
+                name="end_date"
+                label="End Date"
+                rules={[
+                  { required: true, message: "Please input your Password!" },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+              <Form.Item>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  className="login-form-button"
+                >
+                  Add
+                </Button>
+              </Form.Item>
+            </Form>
+          </Modal>
+        </div>
+        <Table
+          className="mt-4"
+          rowKey="_id"
+          rowSelection={{
+            type: "chekbox",
+            ...rowSelection,
+          }}
+          columns={columns}
+          dataSource={skillData}
+        />
+      </Content>
     </div>
-  <Content
-    className="site-layout-background"
-    style={{
-      margin: "24px 16px",
-      padding: 24,
-      minHeight: 280,
-    }}
-  >
-    <div className='d-flex w-100 justify-content-between'>
-    <Button type="primary" danger >
-      Delete
-      </Button>
+  );
+};
 
-    <Button type="primary" onClick={showModal}>
-        Add Skill
-      </Button>
-      <Modal title="Basic Modal" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}
-      footer={
-        [
-        
-        ]
-      }>
-      <Form
-      name="normal_login"
-       layout='vertical'
-      // className="login-form"
-      initialValues={{ remember: true }}
-      onFinish={onFinish}
-    >
-      <Form.Item
-        name="work_name"
-        label="Work Name"
-        rules={[{ required: true, message: 'Please input your Username!' }]}
-      >
-        <Input   />
-      </Form.Item>
-
-      <Form.Item
-        name="company_name"
-        label="Company Name"
-        rules={[{ required: true, message: 'Please input your Password!' }]}
-      >
-        <Input />
-      </Form.Item>
-
-      <Form.Item
-        name="description"
-        label="Description"
-        rules={[{ required: true, message: 'Please input your Username!' }]}
-      >
-        <Input   />
-      </Form.Item>
-
-      <Form.Item
-        name="start_date"
-        label="Start Date"
-        rules={[{ required: true, message: 'Please input your Password!' }]}
-      >
-        <Input />
-      </Form.Item>
-
-
-      <Form.Item
-        name="end_date"
-        label="End Date"
-        rules={[{ required: true, message: 'Please input your Password!' }]}
-      >
-        <Input />
-      </Form.Item>
-      <Form.Item>
-        <Button type="primary" htmlType="submit" className="login-form-button">
-          Add
-        </Button>
-
-      </Form.Item>
-    </Form>
-      </Modal>
-    </div>
-    <Table
-    className='mt-4'
-      rowSelection={{
-        type: "chekbox",
-        ...rowSelection,
-      }}
-      columns={columns}
-      dataSource={data}
-    />
-  </Content>
-</div>
-  )
-}
-
-export default Experiences
+export default Experiences;

@@ -8,37 +8,24 @@ import {
   MenuUnfoldOutlined,
 } from "@ant-design/icons";
 import "../style/adminPanel.css";
-import Contents from "./index";
-import Users from "./Users";
 import { Link } from "react-router-dom";
 import { Button, Stack } from "@mui/material";
-import Avatar from '@mui/material/Avatar';
-import MessageIcon from '@mui/icons-material/Message';
-
+import Avatar from "@mui/material/Avatar";
+import MessageIcon from "@mui/icons-material/Message";
+import { TOKEN } from "../const/Api";
+const logOut = () => {
+  localStorage.removeItem(TOKEN);
+  window.location.href = "/";
+};
 const menu = (
   <Menu
     items={[
       {
-        label: (
-          <Link
-            to="/personal"
-          >
-            Personal settings
-          </Link>
-        ),
+        label: <Link to="/personal">Personal settings</Link>,
       },
       {
-        label: (
-          <a
-            target="_blank"
-            rel="noopener noreferrer"
-            href="https://www.aliyun.com"
-          >
-            Log out
-          </a>
-        ),
+        label: <Button onClick={logOut}>Log out</Button>,
       },
-      
     ]}
   />
 );
@@ -83,22 +70,18 @@ const LayoutP = ({ children }) => {
             className="d-flex justify-content-center align-items-center flex-column"
           ></Menu>
           <Menu mode="inline" defaultSelectedKeys={["1"]}>
-            <Menu.Item key="1" icon={<UserOutlined />}>
-              <Link to="/users">Users</Link>
-            </Menu.Item>
-            <Menu.Item key="2" icon={<VideoCameraOutlined />}>
+            <Menu.Item key="1" icon={<VideoCameraOutlined />}>
               <Link to="/skills">Skills</Link>
             </Menu.Item>
-            <Menu.Item key="3" icon={<MessageIcon />}>
+            <Menu.Item key="2" icon={<MessageIcon />}>
               <Link to="/messages">Messages</Link>
             </Menu.Item>
-            <Menu.Item key="4" icon={<UserOutlined />}>
+            <Menu.Item key="3" icon={<UserOutlined />}>
               <Link to="/experiences">Experiences</Link>
             </Menu.Item>
-            <Menu.Item key="5" icon={<VideoCameraOutlined />}>
+            <Menu.Item key="4" icon={<VideoCameraOutlined />}>
               <Link to="/portfolios">Portfolios</Link>
             </Menu.Item>
-         
           </Menu>
         </Sider>
         <Layout className="site-layout">
@@ -109,7 +92,7 @@ const LayoutP = ({ children }) => {
               </Button>
 
               <Dropdown className="werwerert" overlay={menu} placement="bottom">
-              <Button>
+                <Button>
                   {" "}
                   <Stack direction="row" spacing={2}>
                     <Avatar
@@ -118,8 +101,7 @@ const LayoutP = ({ children }) => {
                     />
                   </Stack>
                 </Button>
-      </Dropdown>
-              
+              </Dropdown>
             </div>
           </Header>
           {children}

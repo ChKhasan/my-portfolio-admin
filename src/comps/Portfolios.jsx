@@ -1,7 +1,8 @@
 import { Table ,Modal, Button, Form, Input} from 'antd'
 import { Content } from 'antd/lib/layout/layout'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { UserOutlined, PercentageOutlined } from '@ant-design/icons';
+import { getData } from '../server/common';
 
 const columns = [
   {
@@ -47,6 +48,8 @@ const rowSelection = {
 };
 const Portfolios = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
+
+
 
   const showModal = () => {
     setIsModalVisible(true);
