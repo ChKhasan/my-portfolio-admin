@@ -1,5 +1,5 @@
 import { Content } from "antd/lib/layout/layout";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
@@ -14,10 +14,18 @@ import CommentIcon from "@mui/icons-material/Comment";
 import Divider from "@mui/material/Divider";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import Avatar from "@mui/material/Avatar";
-import { getData } from "../server/common";
+import { getData, postData,putData } from "../server/common";
 import { useState } from "react";
-import { Button, TextField } from "@mui/material";
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  TextField,
+} from "@mui/material";
 import { SendOutlined } from "@mui/icons-material";
+import { UserOutlined } from "@ant-design/icons";
+import { Form, Input, Button } from "antd";
+import { axios } from "axios";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -77,7 +85,19 @@ const Messages = () => {
     console.log(checked);
     setChecked(newChecked);
   };
-  const writeAnswer = () => {};
+  const ref = useRef();
+
+  const writeAnswer = (id) => {
+    putData(`messages/${id}`,{
+      answer: ref.current.input.value,
+    }).then(() => {
+      getData("messages").then((res) => {
+        setMessageData(res.data.data);
+      });
+    });
+    console.log(ref.current.input.value);
+  };
+
   return (
     <div>
       <div className="content-body">
@@ -204,73 +224,83 @@ const Messages = () => {
                     const labelId = `checkbox-list-label-${value.message}`;
 
                     return (
-                      <ListItem
-                        key={value}
-                        secondaryAction={
-                          <IconButton edge="end" aria-label="comments">
-                            <CommentIcon onClick={() => writeAnswer()} />
-                          </IconButton>
-                        }
-                        disablePadding
-                      >
-                        <ListItemButton
-                          role={undefined}
-                          onClick={handleToggle(value)}
-                          dense
+                      <Accordion>
+                        <AccordionSummary
+                          aria-controls="panel1a-content"
+                          id="panel1a-header"
                         >
-                          <ListItemAvatar>
-                            <Avatar
-                              alt="Travis Howard"
-                              src="/static/images/avatar/2.jpg"
-                            />
-                          </ListItemAvatar>
-                          <ListItemText
-                            id={labelId}
-                            secondary={
-                              <React.Fragment>
-                                <Typography
-                                  sx={{ display: "inline" }}
-                                  component="span"
-                                  variant="body2"
-                                  color="text.primary"
-                                >
-                                  {value.user.last_name} {value.user.first_name}
-                                </Typography>
-                                {` — ${value.message}`}
-                                
-                                <div className=" mt-3 d-flex align-items-center">
-                                  <Box
-                                    component="form"
-                                    sx={{
-                                      "& > :not(style)": {
-                                        m: 1,
-                                        width: "25ch",
-                                      },
-                                    }}
-                                    noValidate
-                                    autoComplete="off"
-                                  >
-                                    <TextField
-                                      label="Answer"
-                                      id="standard-size-small"
-                                      size="small"
-                                      variant="standard"
-                                    />
-                                  </Box>
-                                  <div>
-                                    <IconButton
-                                      color="primary"
-                                      aria-label="add to shopping cart"
-                                    >
-                                      <SendOutlined />
-                                    </IconButton>
-                                  </div>
-                                </div>
-                              </React.Fragment>
+                          <ListItem
+                            key={value}
+                            secondaryAction={
+                              <IconButton edge="end" aria-label="comments">
+                                <CommentIcon />
+                              </IconButton>
                             }
-                          />
-                        </ListItemButton>
-                      </ListItem>
+                            disablePadding
+                          >
+                            <ListItemButton
+                              role={undefined}
+                              onClick={handleToggle(value)}
+                              dense
+                            >
+                              <ListItemAvatar>
+                                <Avatar
+                                  alt="Travis Howard"
+                                  src="/static/images/avatar/2.jpg"
+                                />
+                              </ListItemAvatar>
+                              <ListItemText
+                                id={labelId}
+                                secondary={
+                                  <React.Fragment>
+                                    <Typography
+                                      sx={{ display: "inline" }}
+                                      component="span"
+                                      variant="body2"
+                                      color="text.primary"
+                                    >
+                                      {value.user.last_name}{" "}
+                                      {value.user.first_name}
+                                    </Typography>
+                                    {` — ${value.message}`}
+                                  </React.Fragment>
+                                }
+                              />
+                            </ListItemButton>
+                          </ListItem>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                          <div className=" mt-3 d-flex align-items-center">
+                            <Box
+                              component="form"
+                              sx={{
+                                "& > :not(style)": {
+                                  m: 1,
+                                  width: "25ch",
+                                },
+                              }}
+                              noValidate
+                              autoComplete="off"
+                            >
+                              <Input
+                                ref={ref}
+                                placeholder="default size"
+                                prefix={<UserOutlined />}
+                              />
+                            </Box>
+                            <div>
+                              <IconButton
+                                color="primary"
+                                aria-label="add to shopping cart"
+                              >
+                                <SendOutlined
+                                  onClick={() => writeAnswer(value._id)}
+                                />
+                              </IconButton>
+                            </div>
+                          </div>
+                        </AccordionDetails>
+                      </Accordion>
                     );
                   })}
               </List>

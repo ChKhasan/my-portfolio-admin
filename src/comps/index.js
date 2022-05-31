@@ -30,8 +30,7 @@ const index = () => {
             </LayoutP>
           }
         >
-          <Route path="/" element={<Navigate to="users" />} />
-          <Route path="users" element={<Users />} />
+          <Route path="/" element={<Navigate to="skills" />} />
           <Route path="skills" element={<Skills />} />
           <Route path="messages" element={<Messages />} />
           <Route path="experiences" element={<Experiences />} />

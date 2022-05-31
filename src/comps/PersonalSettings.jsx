@@ -1,6 +1,6 @@
 import { Table } from "antd";
 import { Content } from "antd/lib/layout/layout";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Typography from "@mui/material/Typography";
@@ -12,6 +12,7 @@ import { Form, Input, InputNumber, Button, Upload } from "antd";
 import { EditTwoTone } from "@ant-design/icons";
 import ImgCrop from "antd-img-crop";
 import { Image } from "antd";
+import { getData } from "../server/common";
 
 const layout = {
   labelCol: {
@@ -68,11 +69,19 @@ function a11yProps(index) {
 const PersonalSettings = () => {
   const [edit, setEdit] = useState(true);
   const [value, setValue] = useState(0);
+  const [adminData,setAdminData] = useState([])
 
   const onFinish = (values) => {
     console.log(values);
     setEdit(true);
   };
+
+  useEffect(() => {
+    getData("/auth/me").then((res) => {
+     setAdminData(res.data.data)
+     console.log(res.data.data);
+    })
+  },[])
   const onFinishFailed = (errorInfo) => {
     console.log('Failed:', errorInfo);
   };
@@ -159,37 +168,37 @@ const PersonalSettings = () => {
               <div className=" col-6">
                 <div className="personal_info">
                   <p>First Name</p>
-                  <span>Hasan</span>
+                  <span>{adminData.first_name}</span>
                 </div>
               </div>
               <div className=" col-6">
                 <div className="personal_info">
                   <p>Last Name</p>
-                  <span>Cho'lliyev</span>
+                  <span>{adminData.last_name}</span>
                 </div>
               </div>
               <div className=" col-6">
                 <div className="personal_info">
                   <p>Username</p>
-                  <span>khasan</span>
+                  <span>{adminData.username}</span>
                 </div>
               </div>
               <div className=" col-6">
                 <div className="personal_info">
                   <p>info</p>
-                  <span>I am just Hasan</span>
+                  <span>{adminData.info}</span>
                 </div>
               </div>
               <div className=" col-6">
                 <div className="personal_info">
                   <p>phoneNumber</p>
-                  <span>99 730 14 99</span>
+                  <span>{adminData.phoneNumber}</span>
                 </div>
               </div>
               <div className=" col-6">
                 <div className="personal_info">
                 <p>birthday</p>
-                <span>14.05.1999</span>
+                <span>{adminData.birthday}</span>
 
                 </div>
               </div>
@@ -197,14 +206,14 @@ const PersonalSettings = () => {
                 <div className="personal_info">
 
                 <p>address</p>
-                <span>Qashqadaryo</span>
+                <span>{adminData.address}</span>
                 </div>
               </div>
               <div className=" col-6">
                 <div className="personal_info">
 
                 <p>email</p>
-                <span>chulliyevhasan1499@mail.ru</span>
+                <span>{adminData.email}</span>
                 </div>
               </div>
             </div>
