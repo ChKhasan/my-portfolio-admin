@@ -14,7 +14,7 @@ import CommentIcon from "@mui/icons-material/Comment";
 import Divider from "@mui/material/Divider";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import Avatar from "@mui/material/Avatar";
-import { getData, postData,putData } from "../server/common";
+import { getData, postData,putData,deleteData } from "../server/common";
 import { useState } from "react";
 import {
   Accordion,
@@ -24,8 +24,9 @@ import {
 } from "@mui/material";
 import { SendOutlined } from "@mui/icons-material";
 import { UserOutlined } from "@ant-design/icons";
-import { Form, Input, Button } from "antd";
+import { Form, Input, Button, Skeleton } from "antd";
 import { axios } from "axios";
+import DeleteIcon from '@mui/icons-material/Delete';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -63,15 +64,23 @@ function a11yProps(index) {
 const Messages = () => {
   const [value, setValue] = useState(0);
   const [messageData, setMessageData] = useState([]);
-  useEffect(() => {
+  const getApiData = () => {
+    setLoading(true)
     getData("messages").then((res) => {
       setMessageData(res.data.data);
+    }).finally(() => {
+      setLoading(false)
     });
+  }
+  useEffect(() => {
+    getApiData()
+  
   }, []);
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-  const [checked, setChecked] = React.useState([0]);
+  const [checked, setChecked] = useState([0]);
+  const [loading, setLoading] = useState(false);
 
   const handleToggle = (value) => () => {
     const currentIndex = checked.indexOf(value);
@@ -97,7 +106,12 @@ const Messages = () => {
     });
     console.log(ref.current.input.value);
   };
-
+const deleteMessage = (id) => {
+  console.log(id);
+  deleteData(`messages/${id}`).then((res) => {
+    getApiData()
+  })
+}
   return (
     <div>
       <div className="content-body">
@@ -112,7 +126,7 @@ const Messages = () => {
             minHeight: 280,
           }}
         >
-          <Box sx={{ width: "100%" }}>
+          {loading ? <Skeleton active />: <Box sx={{ width: "100%" }}>
             <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
               <Tabs
                 value={value}
@@ -135,7 +149,12 @@ const Messages = () => {
                 {messageData.map((item, index) => {
                   return (
                     <>
-                      <ListItem alignItems="flex-start">
+                      <ListItem alignItems="flex-start"  secondaryAction={
+                              <IconButton edge="end" aria-label="comments" onClick={() => deleteMessage(item._id)}>
+                                <DeleteIcon />
+                              </IconButton>
+                            }
+                            >
                         <ListItemAvatar>
                           <Avatar
                             alt="Remy Sharp"
@@ -305,7 +324,8 @@ const Messages = () => {
                   })}
               </List>
             </TabPanel>
-          </Box>
+          </Box>}
+          
         </Content>
       </div>
     </div>

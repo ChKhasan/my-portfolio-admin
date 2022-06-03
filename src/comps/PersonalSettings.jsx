@@ -12,7 +12,7 @@ import { Form, Input, InputNumber, Button, Upload } from "antd";
 import { EditTwoTone } from "@ant-design/icons";
 import ImgCrop from "antd-img-crop";
 import { Image } from "antd";
-import { getData } from "../server/common";
+import { getData,postData, putData } from "../server/common";
 
 const layout = {
   labelCol: {
@@ -69,21 +69,28 @@ function a11yProps(index) {
 const PersonalSettings = () => {
   const [edit, setEdit] = useState(true);
   const [value, setValue] = useState(0);
-  const [adminData,setAdminData] = useState([])
+  const [adminData, setAdminData] = useState([]);
 
   const onFinish = (values) => {
     console.log(values);
+
+    putData("auth/updatedetails",value).then((res) => {
+      getResponse()
+    })
+
     setEdit(true);
   };
-
+const getResponse = () => {
+  getData("/auth/me").then((res) => {
+    setAdminData(res.data.data);
+    console.log(res.data.data);
+  });
+}
   useEffect(() => {
-    getData("/auth/me").then((res) => {
-     setAdminData(res.data.data)
-     console.log(res.data.data);
-    })
-  },[])
+    getResponse()
+  }, []);
   const onFinishFailed = (errorInfo) => {
-    console.log('Failed:', errorInfo);
+    console.log("Failed:", errorInfo);
   };
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -101,7 +108,14 @@ const PersonalSettings = () => {
   const onChange = ({ fileList: newFileList }) => {
     setFileList(newFileList);
   };
-
+const onFinishPassword = (values) => {
+   console.log(values)
+   putData("auth/updatepassword",values).then((res) => {
+    console.log(res);
+}).catch((err) => {
+console.log(err);
+})
+}
   const onPreview = async (file) => {
     let src = file.url;
     if (!src) {
@@ -152,18 +166,19 @@ const PersonalSettings = () => {
         <TabPanel label="NEARBY" value={value} index={0}>
           {edit ? (
             <div className="row flex-wrap">
-
               <div className="col-12 d-flex justify-content-center ">
-                <div className="personal_info inline-block " style={{display: "inline-block"}}>
+                <div
+                  className="personal_info inline-block "
+                  style={{ display: "inline-block" }}
+                >
                   <Image width={200} src="./Images/IMG_20211115_234554.jpg" />
                 </div>
               </div>
               <div className="d-flex justify-content-center mt-3 mb-3">
-
-              <Button onClick={() => setEdit(false)}>
-              <EditTwoTone  />
-              Изменить
-              </Button>
+                <Button onClick={() => setEdit(false)}>
+                  <EditTwoTone />
+                  Изменить
+                </Button>
               </div>
               <div className=" col-6">
                 <div className="personal_info">
@@ -197,23 +212,20 @@ const PersonalSettings = () => {
               </div>
               <div className=" col-6">
                 <div className="personal_info">
-                <p>birthday</p>
-                <span>{adminData.birthday}</span>
-
+                  <p>birthday</p>
+                  <span>{adminData.birthday}</span>
                 </div>
               </div>
               <div className=" col-6">
                 <div className="personal_info">
-
-                <p>address</p>
-                <span>{adminData.address}</span>
+                  <p>address</p>
+                  <span>{adminData.address}</span>
                 </div>
               </div>
               <div className=" col-6">
                 <div className="personal_info">
-
-                <p>email</p>
-                <span>{adminData.email}</span>
+                  <p>email</p>
+                  <span>{adminData.email}</span>
                 </div>
               </div>
             </div>
@@ -246,7 +258,6 @@ const PersonalSettings = () => {
                     },
                   ]}
                 >
-                  
                   <Input />
                 </Form.Item>
                 <Form.Item
@@ -258,7 +269,6 @@ const PersonalSettings = () => {
                     },
                   ]}
                 >
-                  
                   <Input />
                 </Form.Item>
                 <Form.Item
@@ -270,7 +280,6 @@ const PersonalSettings = () => {
                     },
                   ]}
                 >
-                  
                   <Input />
                 </Form.Item>
                 <Form.Item
@@ -315,74 +324,72 @@ const PersonalSettings = () => {
         </TabPanel>
         <TabPanel label="NEARBY" value={value} index={1}>
           <div>
-          <Form
-      name="basic"
-      layout="vertical"
-      labelCol={{
-        span: 8,
-      }}
-      wrapperCol={{
-        span: 16,
-      }}
-      initialValues={{
-        remember: true,
-      }}
-      onFinish={onFinish}
-      onFinishFailed={onFinishFailed}
-      autoComplete="off"
-    >
-      <Form.Item
-        label="Username"
-        name="username"
-        rules={[
-          {
-            required: true,
-            message: 'Please input your username!',
-          },
-        ]}
-      >
-        <Input />
-      </Form.Item>
+            <Form
+              name="basic"
+              layout="vertical"
+              labelCol={{
+                span: 8,
+              }}
+              wrapperCol={{
+                span: 16,
+              }}
+              initialValues={{
+                remember: true,
+              }}
+              onFinish={onFinishPassword}
+              onFinishFailed={onFinishFailed}
+              autoComplete="off"
+            >
+              <Form.Item
+                label="Username"
+                name="username"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input your username!",
+                  },
+                ]}
+              >
+                <Input />
+              </Form.Item>
 
-      <Form.Item
-        label="Current Password"
-        name="currentPassword"
-        rules={[
-          {
-            required: true,
-            message: 'Please input your password!',
-          },
-        ]}
-      >
-        <Input.Password />
-      </Form.Item>
-      <Form.Item
-        label="New Password"
-        name="newPassword"
-        rules={[
-          {
-            required: true,
-            message: 'Please input your password!',
-          },
-        ]}
-      >
-        <Input.Password />
-      </Form.Item>
+              <Form.Item
+                label="Current Password"
+                name="currentPassword"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input your password!",
+                  },
+                ]}
+              >
+                <Input.Password />
+              </Form.Item>
+              <Form.Item
+                label="New Password"
+                name="newPassword"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input your password!",
+                  },
+                ]}
+              >
+                <Input.Password />
+              </Form.Item>
 
-   
-
-      <Form.Item
-        wrapperCol={{
-          offset: 8,
-          span: 16,
-        }}
-      >
-        <Button type="primary" htmlType="submit">
-          Change
-        </Button>
-      </Form.Item>
-    </Form>
-            </div>
+              <Form.Item
+                wrapperCol={{
+                  offset: 8,
+                  span: 16,
+                }}
+              >
+                <Button type="primary" htmlType="submit">
+                  Change
+                </Button>
+              </Form.Item>
+            </Form>
+          </div>
         </TabPanel>
       </Content>
     </div>

@@ -1,4 +1,4 @@
-import { Table, Modal, Button, Form, Input, Checkbox, Space } from "antd";
+import { Table, Modal, Button, Form, Input, Checkbox, Space, Skeleton } from "antd";
 import { Content } from "antd/lib/layout/layout";
 import React, { useEffect, useState } from "react";
 import { getData, postData, deleteData, putData } from "../server/common";
@@ -54,7 +54,7 @@ const Experiences = () => {
   const [selected, setSelected] = useState([]);
   const [skillData, setSkillData] = useState([]);
   const [isEdit, setIsEdit] = useState(null);
-
+  const [loading,setLoading] = useState(false)
   const [form] = Form.useForm();
 
   const showModal = () => {
@@ -70,7 +70,10 @@ const Experiences = () => {
   };
 
   const getApiData = () => {
-    getData("experiences").then((res) => setSkillData(res.data.data));
+    setLoading(true)
+    getData("experiences").then((res) => setSkillData(res.data.data)).finally(() => {
+      setLoading(false)
+    });
   };
   const onFinish = (values) => {
     console.log("Success:", values);
@@ -206,7 +209,7 @@ const Experiences = () => {
             </Form>
           </Modal>
         </div>
-        <Table
+    {loading ? <Skeleton active />: <Table
           className="mt-4"
           rowKey="_id"
           rowSelection={{
@@ -215,7 +218,7 @@ const Experiences = () => {
           }}
           columns={columns}
           dataSource={skillData}
-        />
+        />}    
       </Content>
     </div>
   );

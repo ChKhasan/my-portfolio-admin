@@ -2,6 +2,7 @@ import React from "react";
 import { Form, Input, Button, message } from "antd";
 import axios from "axios";
 import { API_URL, TOKEN } from "../const/Api";
+import { LockOutlined, UserOutlined } from '@ant-design/icons';
 const LoginP = () => {
     const onFinish = (values) => {
         axios.post(API_URL + 'auth/login',values).then(res => {
@@ -13,7 +14,7 @@ const LoginP = () => {
         })
       };
   return (
-    <div>
+    <div className="container-fluid background_login">
          <div
       style={{
         height: "100vh",
@@ -22,6 +23,12 @@ const LoginP = () => {
         alignItems: "center",
       }}
     >
+      <div className="wrapper_login">
+        <div className="title_login">
+          <span>
+            Admin login 
+          </span>
+        </div>
       <Form
         name="basic"
         labelCol={{ span: 24 }}
@@ -29,27 +36,26 @@ const LoginP = () => {
         onFinish={onFinish}
       >
         <Form.Item
-          label="User Name"
           name="username"
           rules={[{ required: true, message: "Please input your email!" }]}
         >
-          <Input />
+          <Input placeholder="User Name" className="input" prefix={<UserOutlined className="site-form-item-icon" />}/>
         </Form.Item>
 
         <Form.Item
-          label="Password"
           name="password"
           rules={[{ required: true, message: "Please input your password!" }]}
         >
-          <Input.Password />
+          <Input.Password placeholder="Password" className="input"  prefix={<LockOutlined className="site-form-item-icon" />}/>
         </Form.Item>
 
-        <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+        <Form.Item wrapperCol={{ offset: 0, span: 24 }}>
           <Button type="primary" htmlType="submit">
-            Submit
+            Login
           </Button>
         </Form.Item>
       </Form>
+      </div>
     </div>
     </div>
   )

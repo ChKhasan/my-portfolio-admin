@@ -82,6 +82,9 @@ const LayoutP = ({ children }) => {
             <Menu.Item key="4" icon={<VideoCameraOutlined />}>
               <Link to="/portfolios">Portfolios</Link>
             </Menu.Item>
+            <Menu.Item key="5" icon={<VideoCameraOutlined />}>
+              <Link to="/photos">Photos</Link>
+            </Menu.Item>
           </Menu>
         </Sider>
         <Layout className="site-layout">

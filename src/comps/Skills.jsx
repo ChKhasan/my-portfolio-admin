@@ -1,4 +1,4 @@
-import { Table, Modal, Button, Form, Input, Space } from "antd";
+import { Table, Modal, Button, Form, Input, Space, Skeleton } from "antd";
 import { Content } from "antd/lib/layout/layout";
 import React, { useEffect, useState } from "react";
 import {
@@ -13,6 +13,8 @@ const Skills = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [skillData, setSkillData] = useState([]);
   const [isEdit, setIsEdit] = useState(null);
+  const [loading, setLoading] = useState(false);
+
 
   const columns = [
     {
@@ -58,7 +60,11 @@ const Skills = () => {
     setIsModalVisible(false);
   };
   const getApiData = () => {
-    getData("skills").then((res) => setSkillData(res.data.data));
+    setLoading(true)
+
+    getData("skills").then((res) => setSkillData(res.data.data)).finally(() => {
+      setLoading(false)
+    });
   };
   const onFinish = (values) => {
     console.log("Success:", values);
@@ -82,7 +88,7 @@ const Skills = () => {
     getApiData();
   };
   useEffect(() => {
-    getApiData();
+    getApiData()
   }, []);
   const editApiData = (e) => {
     form.setFieldsValue(e);
@@ -167,7 +173,7 @@ const Skills = () => {
               </Form>
             </Modal>
           </div>
-          <Table
+        {loading ? <Skeleton active/>:<Table
             className="mt-4"
             rowKey="_id"
             rowSelection={{
@@ -176,7 +182,7 @@ const Skills = () => {
             }}
             columns={columns}
             dataSource={skillData}
-          />
+          />}  
         </Content>
       </div>
     </div>
