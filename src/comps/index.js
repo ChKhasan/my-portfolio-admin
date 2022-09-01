@@ -1,27 +1,16 @@
 import React from "react";
-import {
-  BrowserRouter,
-  Navigate,
-  Outlet,
-  Route,
-  Routes,
-} from "react-router-dom";
+import { Navigate, Outlet, Route, Routes } from "react-router-dom";
 import Access from "../pages/Access";
-import LoginP from "../pages/LoginP";
 import ProtectedRoutes from "../pages/ProtectedRoutes";
-import Experiences from "./Experiences";
+import TemplateES from "./TemplateES";
 import LayoutP from "./LayoutP";
-import Messages from "./Messages";
-import PersonalSettings from "./PersonalSettings";
-import Photos from "./Photos";
-import Portfolios from "./Portfolios";
-import Skills from "./Skills";
-import Users from "./Users";
+import CreateTeacher from "./CreateTeacher";
+
 
 const index = () => {
   return (
-      <Routes>
-        <Route path="/" element={<Access />} >
+    <Routes>
+      <Route path="/" element={<Access />}>
         <Route
           path="/"
           element={
@@ -30,22 +19,18 @@ const index = () => {
             </LayoutP>
           }
         >
-          <Route path="/" element={<Navigate to="skills" />} />
-          <Route path="skills" element={<Skills />} />
-          <Route path="messages" element={<Messages />} />
-          <Route path="experiences" element={<Experiences />} />
-          <Route path="portfolios" element={<Portfolios />} />
-          <Route path="photos" element={<Photos />} />
-          <Route path="personal" element={<PersonalSettings />} />
+          <Route path="/" element={<Navigate to="students" />} />
+          <Route
+            path="students"
+            element={<TemplateES  />}
+          />
+        <Route path="create_teacher" element={<CreateTeacher />}/>
         </Route>
+      </Route>
 
-        </Route>
-        
-        <Route path="/" element={<ProtectedRoutes />} >
-        <Route path="/login" element={<LoginP />} />
-        </Route>
-
-      </Routes>
+      <Route path="/" element={<ProtectedRoutes />}>
+      </Route>
+    </Routes>
   );
 };
 
